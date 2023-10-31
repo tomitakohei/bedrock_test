@@ -2,6 +2,10 @@ FROM python:latest
 
 RUN apt-get update && apt-get install -y \
     awscli \
+    jq \
+    less \
+    mandoc \
+    vim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
