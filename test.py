@@ -4,7 +4,7 @@ import json
 # Bedrockでは、InvokeModelとInvokeModelWithStreamingResponse APIを呼び出す場合のみ "bedrock-runtime" を利用し、それ以外では" bedrock" を利用します。
 bedrock_runtime_client = boto3.client(
     service_name="bedrock-runtime",
-    region_name="us-east-1"
+    region_name="us-west-2"
 )
 
 text = "こんにちは"
