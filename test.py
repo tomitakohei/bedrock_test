@@ -2,19 +2,31 @@ import boto3
 import json
 
 # Bedrockでは、InvokeModelとInvokeModelWithStreamingResponse APIを呼び出す場合のみ "bedrock-runtime" を利用し、それ以外では" bedrock" を利用します。
-bedrock_runtime_client = boto3.client(
-    service_name="bedrock-runtime",
-    region_name="us-west-2"
-)
+bedrock_runtime = boto3.client("bedrock-runtime", region_name="us-west-2")
 
-text = "こんにちは"
-# Anthropic社のClaudeモデルでは、以下のようなフォーマットを利用するよう公式サイトに案内があります https://docs.anthropic.com/claude/docs/introduction-to-prompt-design#human--assistant-formatting
-# Bedrockではフォーマットに従わない場合エラーが返される挙動になっていますのでご注意下さい。
-prompt = f"\n\nHuman: {text}\n\nAssistant:"
+# リクエストボディを定義
+body = json.dumps({
+   "anthropic_version": "bedrock-2023-05-31",
+   "max_tokens": 1000,
+   "messages": [
+       {
+           "role": "user",
+           "content": [{"type": "text", "text": "生成AIでDXビジネスを実現するアイディアを出して"}]
+       }
+   ]
+})
 
-response = bedrock_runtime_client.invoke_model(
-        body=json.dumps({"prompt": prompt, "max_tokens_to_sample": 100}), modelId="anthropic.claude-v2"
-)
+# モデルを定義（Claude 3 Opus）
+modelId="anthropic.claude-3-opus-20240229-v1:0"
 
-response_body = json.loads(response.get("body").read())
-print(response_body.get("completion"))
+# レスポンスを定義
+response = bedrock_runtime.invoke_model_with_response_stream(body=body, modelId=modelId)
+
+# ストリーミング出力
+for event in response.get("body"):
+   chunk = json.loads(event["chunk"]["bytes"])
+   if chunk['type'] == 'content_block_delta' and chunk['delta']['type'] == 'text_delta':
+       print(chunk['delta']['text'], end="")
+
+# ストリーミング終了後に改行
+print()
