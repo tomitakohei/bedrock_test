@@ -17,7 +17,7 @@ body = json.dumps({
 })
 
 # モデルを定義（Claude 3 Opus）
-modelId="anthropic.claude-3-opus-20240229-v1:0"
+modelId="anthropic.claude-3-5-sonnet-20240620-v1:0"
 
 # レスポンスを定義
 response = bedrock_runtime.invoke_model_with_response_stream(body=body, modelId=modelId)
